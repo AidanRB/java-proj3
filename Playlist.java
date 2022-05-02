@@ -72,4 +72,25 @@ public class Playlist implements Serializable {
     public String toString() {
         return getTitle() + ": " + getTotalLength();
     }
+
+    // return playlist with all unlicensed songs removed
+    public Playlist getLicensedPlaylist(String... unlicensedCreators) {
+        Playlist p = new Playlist(getTitle());
+
+        // iterate through all tracks
+        track: for (Track t : tracks) {
+            // check each creator for a match
+            for (String creator : unlicensedCreators) {
+                if (t.getCreator().equals(creator)) {
+                    // break to track loop if we find an unlicensed song
+                    break track;
+                }
+            }
+
+            // add the song if it was not unlicensed
+            p.add(t);
+        }
+
+        return p;
+    }
 }

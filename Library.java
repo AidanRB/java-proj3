@@ -11,6 +11,7 @@ import java.util.ArrayList;
 
 public class Library {
     ArrayList<Playlist> playlists;
+    String[] unlicensedCreators = { "Alec Benjamin", "Twenty One Pilots", "Half Alive" };
 
     public Library() {
         playlists = new ArrayList<Playlist>();
@@ -59,6 +60,13 @@ public class Library {
         throw new IllegalArgumentException("Playlist does not exist");
     }
 
+    // print unlicensed creators
+    public void printUnlicensedCreators() {
+        for (String s : unlicensedCreators) {
+            System.out.println(s);
+        }
+    }
+
     // save library to file
     public void save(String filename) {
         try {
@@ -71,7 +79,7 @@ public class Library {
             // write each playlist to file
             for (Playlist p : playlists) {
                 System.out.print(".");
-                stream.writeObject(p);
+                stream.writeObject(p.getLicensedPlaylist(unlicensedCreators));
             }
             System.out.println(" Done!");
 
@@ -79,7 +87,7 @@ public class Library {
             stream.close();
 
         } catch (IOException e) {
-            System.out.println("Error saving library to " + filename);
+            System.err.println("Error saving library to " + filename);
         }
     }
 
@@ -103,12 +111,12 @@ public class Library {
                         // add playlist to library if object is a playlist
                         playlists.add((Playlist) temp);
                     } else {
-                        // error: invalid object
+                        System.err.println("Error: invalid playlist");
                     }
-                } catch (ClassNotFoundException e) {
-                    System.out.println("Invalid file contents in " + filename);
                 } catch (EOFException e) {
                     break;
+                } catch (ClassNotFoundException e) {
+                    System.err.println("Error: invalid playlist");
                 }
             }
 
@@ -118,11 +126,9 @@ public class Library {
             stream.close();
 
         } catch (FileNotFoundException e) {
-            System.out.println("Could not find file " + filename);
+            System.err.println("Could not find file " + filename);
         } catch (IOException e) {
-            System.out.println("Error loading library from " + filename);
-        } catch (ClassNotFoundException e) {
-            System.out.println("Bad file contents in " + filename);
+            System.err.println("Error loading library from " + filename);
         }
     }
 }
