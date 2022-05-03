@@ -30,6 +30,16 @@ public class Playlist implements Serializable {
         tracks.remove(t);
     }
 
+    // remove a track by index
+    public void remove(int index) {
+        tracks.remove(index);
+    }
+
+    // get playlist length
+    public int length() {
+        return tracks.size();
+    }
+
     // sort the playlist by track title
     public void sortByTitle() {
         tracks.sort(null);
@@ -45,15 +55,17 @@ public class Playlist implements Serializable {
         tracks.sort(new TrackLengthComparator());
     }
 
-    // show the playlist
+    // show the playlist with track numbers
     public void show() {
-        for (Track t : tracks) {
-            System.out.println(t);
+        System.out.println();
+        for (int i = 0; i < tracks.size(); i++) {
+            System.out.println("" + String.format("%02d", i + 1) + ". " + tracks.get(i));
         }
     }
 
     // play the playlist
     public void play() {
+        System.out.println();
         for (Track t : tracks) {
             System.out.println("Now playing: " + t);
         }

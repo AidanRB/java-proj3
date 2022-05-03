@@ -10,15 +10,12 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 
 public class Library {
-    ArrayList<Playlist> playlists;
-    String[] unlicensedCreators = { "Alec Benjamin", "Twenty One Pilots", "Half Alive" };
-
-    public Library() {
-        playlists = new ArrayList<Playlist>();
-    }
+    private ArrayList<Playlist> playlists;
+    private transient String[] unlicensedCreators = { "Alec Benjamin", "Twenty One Pilots", "Half Alive" };
 
     // show all playlists
     public void showPlaylists() {
+        System.out.println();
         for (Playlist p : playlists) {
             System.out.println(p);
         }
@@ -87,48 +84,59 @@ public class Library {
             stream.close();
 
         } catch (IOException e) {
-            System.err.println("Error saving library to " + filename);
+            System.err.println("\nError saving library to " + filename);
         }
     }
 
     // load library from file
-    public void load(String filename) {
-        try {
-            // create file input stream
-            ObjectInputStream stream = new ObjectInputStream(
-                    new BufferedInputStream(new FileInputStream(filename)));
+    public void load(String filename) throws FileNotFoundException, IOException {
+        // create file input stream
+        ObjectInputStream stream = new ObjectInputStream(
+                new BufferedInputStream(new FileInputStream(filename)));
 
-            System.out.print("Loading library from " + filename);
+        System.out.print("Loading library from " + filename);
 
-            // read each playlist from file
-            while (true) {
-                System.out.print(".");
+        // read each playlist from file
+        while (true) {
+            System.out.print(".");
 
-                // try to add playlist to library
-                try {
-                    Object temp = stream.readObject();
-                    if (temp != null && temp instanceof Playlist) {
-                        // add playlist to library if object is a playlist
-                        playlists.add((Playlist) temp);
-                    } else {
-                        System.err.println("Error: invalid playlist");
-                    }
-                } catch (EOFException e) {
-                    break;
-                } catch (ClassNotFoundException e) {
+            // try to add playlist to library
+            try {
+                Object temp = stream.readObject();
+                if (temp != null && temp instanceof Playlist) {
+                    // add playlist to library if object is a playlist
+                    playlists.add((Playlist) temp);
+                } else {
                     System.err.println("Error: invalid playlist");
                 }
+            } catch (EOFException e) {
+                break;
+            } catch (ClassNotFoundException e) {
+                System.err.println("Error: invalid playlist");
             }
+        }
 
-            System.out.println(" Done!");
+        System.out.println(" Done!");
 
-            // close file input stream
-            stream.close();
+        // close file input stream
+        stream.close();
+    }
 
+    public Library() {
+        playlists = new ArrayList<Playlist>();
+    }
+
+    public Library(String filename) {
+        this();
+
+        try {
+            load(filename);
+            return;
         } catch (FileNotFoundException e) {
             System.err.println("Could not find file " + filename);
         } catch (IOException e) {
             System.err.println("Error loading library from " + filename);
         }
+        System.out.println("Creating new library.");
     }
 }

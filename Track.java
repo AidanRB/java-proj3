@@ -1,4 +1,6 @@
-public class Track {
+import java.io.Serializable;
+
+public class Track implements Comparable<Track>, Serializable {
     // title, creator, length
     private String title;
     private String creator;
@@ -24,7 +26,10 @@ public class Track {
         return length;
     }
 
-    public void setLength(int length) {
+    public void setLength(int length) throws IllegalArgumentException {
+        if (length < 0) {
+            throw new IllegalArgumentException("Invalid length.");
+        }
         this.length = length;
     }
 
